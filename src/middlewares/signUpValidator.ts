@@ -1,6 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import validator from "validator";
+
 import User from "../models/User.js";
+
 const { isEmail, isStrongPassword, isLength } = validator;
 
 function validateUsername(username: string) {

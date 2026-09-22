@@ -1,14 +1,18 @@
+import cookieParser from "cookie-parser";
 import express from "express";
-import userRoutes from "./routes/userRoutes.js";
+
+import { errorHandler } from "./middlewares/errorHandler.js";
 // import clientRoutes from "./routes/clientRoutes.js";
 // import projectRoutes from "./routes/projectRoutes.js";
 // import deliveryRoutes from "./routes/deliveryRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
-import { errorHandler } from "./middlewares/errorHandler.js";
+import userRoutes from "./routes/userRoutes.js";
 
 const app = express();
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);

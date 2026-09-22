@@ -1,11 +1,11 @@
-import type { Request, Response } from "express";
-import User from "../models/User.js";
-import encryptPassword from "../utils/encryptPassword.js";
 import { compare } from "bcrypt";
+import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
+import User from "../models/User.js";
+import encryptPassword from "../utils/encryptPassword.js";
+
 export const signin = async (req: Request, res: Response) => {
-  //TODO: IMPLEMENTAR JWT E SESSÃO
   const { email, password } = req.body;
   const user = await User.findOne({ email: email });
 
@@ -31,6 +31,8 @@ export const signin = async (req: Request, res: Response) => {
   );
 
   user.refreshTokens.push({ token: refreshToken, createdAt: new Date() });
+
+  await user.save();
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
@@ -59,5 +61,18 @@ export const signup = async (req: Request, res: Response) => {
 };
 
 export const logout = async (req: Request, res: Response) => {
-  //TODO: IMPLEMENTAR JWT E SESSÃO
+  const user = await User.findById(req.userId);
+
+  if (!user) return res.status(400).json("User not found");
+
+  await User.findByIdAndUpdate(req.userId, {
+    refreshTokens: user.refreshTokens.filter(
+      (refToken) => refToken["token"] !== req.cookies["refreshToken"],
+    ),
+  });
+
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
+
+  return res.status(200).json("logout successfully");
 };

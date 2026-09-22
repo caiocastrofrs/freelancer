@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+
 import User from "../models/User.js";
 
 export const createClient = async (req: Request, res: Response) => {

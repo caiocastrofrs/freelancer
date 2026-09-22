@@ -1,7 +1,18 @@
 import type { Request, Response } from "express";
+import mongoose from "mongoose";
+
 import User from "../models/User.js";
 
 export const getUser = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  if (
+    !userId ||
+    Array.isArray(userId) ||
+    !mongoose.Types.ObjectId.isValid(userId)
+  ) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
   const user = await User.findById(req.params.userId);
 
   if (user) {
